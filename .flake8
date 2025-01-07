@@ -1,0 +1,9 @@
+[flake8]
+ignore = C101
+exclude =
+  .venv
+  migrations,
+  __pycache__,
+  manage.py,
+per-file-ignores =
+    backend/core/settings/*.py: F401, F403, E501

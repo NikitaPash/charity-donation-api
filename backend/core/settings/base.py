@@ -2,11 +2,10 @@
 Base settings for the Django project.
 """
 
-from pathlib import Path
 import os
+from pathlib import Path
 
 from dotenv import load_dotenv
-
 
 load_dotenv()
 

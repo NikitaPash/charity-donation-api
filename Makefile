@@ -6,6 +6,14 @@ install:
 migrate:
 	poetry run python backend/manage.py migrate
 
+.PHONY: install-pre-commit
+install-pre-commit:
+	poetry run pre-commit uninstall; poetry run pre-commit install
+
+.PHONY: lint
+lint:
+	poetry run pre-commit run --all-files
+
 .PHONY: migrations
 migrations:
 	poetry run python backend/manage.py makemigrations
@@ -18,5 +26,6 @@ runserver:
 superuser:
 	poetry run python backend/manage.py createsuperuser
 
+# Used by other developers to prepare the project.
 .PHONY: update
-update: install migrate ;
+update: install migrate install-pre-commit ;
