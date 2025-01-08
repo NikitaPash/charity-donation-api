@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-# Define DJANGO_ENV in .env file as 'production' for production settings.
+# Define DJANGO_ENV ('development'/'production') in .env file for desired settings.
 DJANGO_ENV = os.getenv('DJANGO_ENV', 'development')
 
 if DJANGO_ENV == 'production':
