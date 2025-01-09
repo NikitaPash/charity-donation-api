@@ -16,10 +16,11 @@ RUN python -m venv /py && \
     && python -m venv /py \
     && pip install --upgrade pip \
     && pip install poetry \
+    flake8 \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-COPY pyproject.toml poetry.lock /app/
+COPY pyproject.toml poetry.lock .flake8 /app/
 
 RUN poetry install --no-root
 
