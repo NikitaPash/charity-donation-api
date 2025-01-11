@@ -1,6 +1,6 @@
 .PHONY: migrate
 migrate:
-	docker-compose run --rm app sh -c "poetry run python manage.py migrate"
+	docker-compose run --rm app sh -c "poetry run python manage.py wait_for_db && poetry run python manage.py migrate"
 
 .PHONY: migrations
 migrations:
@@ -8,7 +8,7 @@ migrations:
 
 .PHONY: superuser
 superuser:
-	docker-compose run --rm app sh -c "poetry run python backend/manage.py createsuperuser"
+	docker-compose run --rm app sh -c "poetry run python manage.py createsuperuser"
 
 .PHONY: create-app
 create-app:
@@ -17,3 +17,7 @@ create-app:
 .PHONY: lint
 lint:
 	poetry run pre-commit run --all-files
+
+.PHONY: test
+test:
+	docker-compose run --rm app sh -c "poetry run python manage.py test"

@@ -1,5 +1,5 @@
 """
-URL configuration for core project.
+URL mapping for the project.
 """
 from django.contrib import admin
 from django.urls import path

@@ -1,8 +1,9 @@
 [flake8]
-ignore = C101
+ignore = C101, I100
+max-line-length = 119
 exclude =
-  .venv
-  migrations,
+  .venv,
+  */migrations/*,
   __pycache__,
   manage.py,
 per-file-ignores =
