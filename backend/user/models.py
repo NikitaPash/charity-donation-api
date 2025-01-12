@@ -22,18 +22,19 @@ class UserManager(BaseUserManager):
         user = self.model(email=self.normalize_email(email), **extra_fields)
         user.set_password(password)
         user.save(using=self._db)
-        logger.info(f'New user created: {email}')
+        logger.info('New user created.')
 
         return user
 
     def create_superuser(self, email, password):
         """Create, save and return a new superuser."""
-        logger.info(f'Creating superuser with email: {email}')
+        logger.info('Creating superuser')
         user = self.create_user(email, password)
         user.is_staff = True
         user.is_superuser = True
+        user.role = User.UserRoleChoice.ADMIN
         user.save(using=self._db)
-        logger.info(f'Superuser created: {email}')
+        logger.info('Superuser created.')
 
         return user
 
@@ -50,7 +51,11 @@ class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(max_length=255, unique=True)
     first_name = models.CharField(max_length=255)
     last_name = models.CharField(max_length=255, blank=True)
-    role = models.CharField(max_length=50, choices=UserRoleChoice, default=UserRoleChoice.DONOR)
+    role = models.CharField(
+        max_length=50,
+        choices=UserRoleChoice,
+        default=UserRoleChoice.DONOR,
+    )
     balance = models.DecimalField(
         max_digits=12,
         decimal_places=2,

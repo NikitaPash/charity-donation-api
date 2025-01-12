@@ -16,13 +16,17 @@ SECRET_KEY = os.environ.get('SECRET_KEY_DEV', 'default-secret-key')
 
 # Application definition
 
-INSTALLED_APPS = [
+INSTALLED_APPS = [  # type: ignore
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    'rest_framework',
+    'drf_spectacular',
+
     'main_app.apps.MainAppConfig',
     'user.apps.UserConfig',
 ]
@@ -145,3 +149,7 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'user.User'
+
+REST_FRAMEWORK = {
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+}
