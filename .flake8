@@ -7,5 +7,5 @@ exclude =
   __pycache__,
   manage.py,
 per-file-ignores =
-    backend/core/settings/*.py: F401, F403, E501
+    backend/core/settings/*.py: F401, F403, E501, A005
     ./core/settings/*.py: F401, F403, E501

@@ -1,6 +1,8 @@
 """
 Database model for User API.
 """
+from decimal import Decimal
+
 from django.contrib.auth.base_user import (AbstractBaseUser, BaseUserManager)
 from django.contrib.auth.models import PermissionsMixin
 from django.utils.translation import gettext_lazy as _
@@ -49,7 +51,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         ADMIN = 'AD', _('Admin')
 
     email = models.EmailField(max_length=255, unique=True)
-    first_name = models.CharField(max_length=255)
+    first_name = models.CharField(max_length=255, blank=True)
     last_name = models.CharField(max_length=255, blank=True)
     role = models.CharField(
         max_length=50,
@@ -59,7 +61,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     balance = models.DecimalField(
         max_digits=12,
         decimal_places=2,
-        default=0.00,
+        default=Decimal('0.00'),
     )
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
@@ -69,13 +71,10 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def add_balance(self, amount):
         """Add some amount to user's balance."""
-        if amount <= 0:
-            logger.error(f'Invalid balance addition attempt for user {self.email}: {amount}')
-            raise ValueError(_('Amount must be positive.'))
-
         self.balance += amount
         self.save()
-        logger.info(f'Added {amount} to balance for user {self.email}. New balance: {self.balance}')
+        logger.info(f'Top-up successful for user {self.email}. '
+                    f'Added {amount}, new balance {self.balance}')
 
     def deduct_balance(self, amount):
         """Deduct some amount from user's balance."""

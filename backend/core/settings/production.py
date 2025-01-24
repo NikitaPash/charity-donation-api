@@ -1,8 +1,6 @@
 """
-Production settings for the Django project.
+Production settings.
 """
-from .base import *
-
 DEBUG = False
 
 ALLOWED_HOSTS = ['*']

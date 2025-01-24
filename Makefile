@@ -6,6 +6,9 @@ migrate:
 migrations:
 	docker-compose run --rm app sh -c "poetry run python manage.py makemigrations"
 
+.PHONY: full-migration
+full-migration: migrations migrate ;
+
 .PHONY: superuser
 superuser:
 	docker-compose run --rm app sh -c "poetry run python manage.py createsuperuser"
@@ -18,6 +21,14 @@ create-app:
 lint:
 	poetry run pre-commit run --all-files
 
+.PHONY: docker-lint
+docker-lint:
+	docker-compose run --rm app sh -c "poetry run flake8"
+
 .PHONY: test
 test:
 	docker-compose run --rm app sh -c "poetry run python manage.py test"
+
+.PHONY: rebuild
+rebuild:
+	docker-compose down && docker-compose build

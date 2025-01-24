@@ -1,11 +1,13 @@
 """
-Base settings for the Django project.
+Base settings.
 """
 
 import os
 from pathlib import Path
 
 from dotenv import load_dotenv
+
+from datetime import timedelta
 
 load_dotenv()
 
@@ -26,6 +28,7 @@ INSTALLED_APPS = [  # type: ignore
 
     'rest_framework',
     'drf_spectacular',
+    'rest_framework_simplejwt',
 
     'main_app.apps.MainAppConfig',
     'user.apps.UserConfig',
@@ -73,46 +76,6 @@ DATABASES = {
     }
 }
 
-# Logging
-
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'formatters': {
-        'standard': {
-            'format': '%(asctime)s %(levelname)s %(name)s %(message)s'
-        },
-    },
-    'handlers': {
-        'console': {
-            'level': 'INFO',
-            'class': 'logging.StreamHandler',
-            'formatter': 'standard',
-            'filters': [],
-        },
-    },
-    'loggers': {
-        logger_name: {
-            'level': 'WARNING',
-            'propagate': True,
-        } for logger_name in
-        ('django', 'django.request', 'django.db.backends', 'django.template', 'core', 'urllib3', 'asyncio')
-    },
-    'root': {
-        'level': 'DEBUG',
-        'handlers': ['console'],
-    }
-}
-# Log styling
-
-LOGGING['formatters']['colored'] = {  # type: ignore
-    '()': 'colorlog.ColoredFormatter',
-    'format': '%(log_color)s%(asctime)s %(levelname)s %(name)s %(bold_white)s%(message)s',
-}
-LOGGING['loggers']['core']['level'] = 'DEBUG'  # type: ignore
-LOGGING['handlers']['console']['level'] = 'DEBUG'  # type: ignore
-LOGGING['handlers']['console']['formatter'] = 'colored'  # type: ignore
-
 # Password validation
 
 AUTH_PASSWORD_VALIDATORS = [
@@ -150,6 +113,12 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'user.User'
 
-REST_FRAMEWORK = {
-    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+# JWT authentication configurations
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
+    'SLIDING_TOKEN_REFRESH_LIFETIME': timedelta(days=1),
+    'SLIDING_TOKEN_LIFETIME': timedelta(days=30),
+    'SLIDING_TOKEN_REFRESH_LIFETIME_LATE_USER': timedelta(days=1),
+    'SLIDING_TOKEN_LIFETIME_LATE_USER': timedelta(days=30),
 }

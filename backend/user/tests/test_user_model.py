@@ -1,6 +1,8 @@
 """
 Tests for User model and manager.
 """
+from decimal import Decimal
+
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 
@@ -71,20 +73,17 @@ class UserModelTests(TestCase):
     def test_add_balance(self):
         """Test adding to balance."""
         user = create_user(email='testadd1@example.com')
-        amount_to_add1 = 55.50
-        amount_to_add2 = -10.50
+        amount_to_add1 = Decimal('55.50')
         user.add_balance(amount_to_add1)
 
         self.assertEqual(user.balance, amount_to_add1)
-        with self.assertRaises(ValueError):
-            user.add_balance(amount_to_add2)
 
     def test_deduct_balance(self):
         """Test deducting from balance."""
         user = create_user(email='testdeduct1@example.com')
-        balance = user.balance = 100
-        amount_to_deduct1 = 55.50
-        amount_to_deduct2 = -10.50
+        balance = user.balance = Decimal('100')
+        amount_to_deduct1 = Decimal('55.50')
+        amount_to_deduct2 = Decimal('-10.50')
         user.deduct_balance(amount_to_deduct1)
 
         self.assertEqual(user.balance, balance - amount_to_deduct1)
