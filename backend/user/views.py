@@ -2,8 +2,9 @@
 Views for the user API.
 """
 
-from rest_framework import generics, permissions, status
+from rest_framework import generics, status
 from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.exceptions import ValidationError
 
 from rest_framework_simplejwt.authentication import JWTAuthentication
@@ -24,7 +25,7 @@ class ManageUserView(generics.RetrieveUpdateAPIView):
     """Manage the authenticated user."""
     serializer_class = UserProfileSerializer
     authentication_classes = [JWTAuthentication]
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsAuthenticated]
 
     def get_object(self):
         """Retrieve and return the authenticated user."""
@@ -35,7 +36,7 @@ class TopUpView(generics.CreateAPIView):
     """Top up the authenticated user's balance."""
     serializer_class = TopUpSerializer
     authentication_classes = [JWTAuthentication]
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsAuthenticated]
 
     def perform_create(self, serializer):
         """Handle the balance update logic."""

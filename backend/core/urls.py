@@ -18,4 +18,5 @@ urlpatterns = [
         name='api-docs',
     ),
     path('api/user/', include('user.urls')),
+    path('api/campaign/', include('campaign.urls')),
 ]

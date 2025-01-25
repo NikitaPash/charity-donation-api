@@ -1,5 +1,5 @@
 """
-URL mappings for the user API.
+URL mappings for the user app.
 """
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 

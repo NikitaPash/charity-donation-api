@@ -54,7 +54,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     first_name = models.CharField(max_length=255, blank=True)
     last_name = models.CharField(max_length=255, blank=True)
     role = models.CharField(
-        max_length=50,
+        max_length=20,
         choices=UserRoleChoice,
         default=UserRoleChoice.DONOR,
     )
@@ -73,8 +73,6 @@ class User(AbstractBaseUser, PermissionsMixin):
         """Add some amount to user's balance."""
         self.balance += amount
         self.save()
-        logger.info(f'Top-up successful for user {self.email}. '
-                    f'Added {amount}, new balance {self.balance}')
 
     def deduct_balance(self, amount):
         """Deduct some amount from user's balance."""

@@ -32,6 +32,7 @@ INSTALLED_APPS = [  # type: ignore
 
     'main_app.apps.MainAppConfig',
     'user.apps.UserConfig',
+    'campaign.apps.CampaignConfig',
 ]
 
 MIDDLEWARE = [
