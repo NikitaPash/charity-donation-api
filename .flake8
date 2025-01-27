@@ -1,5 +1,6 @@
 [flake8]
 ignore = C101, I100
+application-import-names = main_app
 max-line-length = 119
 exclude =
   .venv,

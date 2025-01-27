@@ -161,8 +161,8 @@ class PrivateUserApiTests(TestCase):
         self.assertTrue(self.user.check_password(payload['password']))
         self.assertEqual(res.status_code, status.HTTP_200_OK)
 
-    def test_update_read_only_fields_not_allowed(self):
-        """Test updating read_only profile fields is not allowed."""
+    def test_update_restricted_fields_returns_error(self):
+        """Test updating read only profile fields returns an error."""
         balance = self.user.balance
         role = self.user.get_role_display()
 

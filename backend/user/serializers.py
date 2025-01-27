@@ -6,7 +6,8 @@ from decimal import Decimal
 from django.contrib.auth import get_user_model
 
 from rest_framework import serializers
-from rest_framework.exceptions import ValidationError
+
+from main_app.serializer_utils import RestrictedFieldValidatorMixin
 
 import logging
 
@@ -26,25 +27,15 @@ class UserSerializer(serializers.ModelSerializer):
         return get_user_model().objects.create_user(**validated_data)
 
 
-class UserProfileSerializer(UserSerializer):
+class UserProfileSerializer(RestrictedFieldValidatorMixin, UserSerializer):
     """Serializer for the user profile."""
 
     role = serializers.CharField(source='get_role_display', read_only=True)
-    balance = serializers.DecimalField(max_digits=12, decimal_places=2, read_only=True)
 
     class Meta(UserSerializer.Meta):
         fields = UserSerializer.Meta.fields + ['first_name', 'last_name', 'role', 'balance']
-
-    def validate(self, data):
-        """Validate that restricted fields (balance, role) are not being updated."""
         restricted_fields = ['balance', 'role']
-        for field in restricted_fields:
-            if field in self.initial_data:
-                user_email = self.instance.email if self.instance else 'unknown'
-                logger.warning(f"User {user_email} attempted to update restricted field '{field}'")
-                raise ValidationError({field: f'Updating {field} is not allowed.'})
-
-        return data
+        read_only_fields = ['balance', 'role']
 
     def update(self, instance, validated_data):
         """Update and return a user."""

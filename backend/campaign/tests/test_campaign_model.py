@@ -9,7 +9,7 @@ from django.utils.timezone import now
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 
-from ..models import Campaign
+from campaign.models import Campaign
 
 
 class CampaignModelTests(TestCase):
