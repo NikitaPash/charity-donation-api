@@ -33,6 +33,7 @@ INSTALLED_APPS = [  # type: ignore
     'main_app.apps.MainAppConfig',
     'user.apps.UserConfig',
     'campaign.apps.CampaignConfig',
+    'donation.apps.DonationConfig',
 ]
 
 MIDDLEWARE = [
@@ -106,7 +107,11 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
+MEDIA_URL = '/media/'
+
+MEDIA_ROOT = 'vol/web/media'
+STATIC_ROOT = 'vol/web/static'
 
 # Default primary key field type
 
@@ -122,4 +127,8 @@ SIMPLE_JWT = {
     'SLIDING_TOKEN_LIFETIME': timedelta(days=30),
     'SLIDING_TOKEN_REFRESH_LIFETIME_LATE_USER': timedelta(days=1),
     'SLIDING_TOKEN_LIFETIME_LATE_USER': timedelta(days=30),
+}
+
+SPECTACULAR_SETTINGS = {
+    'COMPONENT_SPLIT_REQUEST': True,
 }

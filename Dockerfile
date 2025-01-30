@@ -13,6 +13,9 @@ RUN python -m venv /py && \
     build-essential \
     libpq-dev \
     gcc \
+    libjpeg-dev \
+    zlib1g-dev \
+    libfreetype6-dev \
     && python -m venv /py \
     && pip install --upgrade pip \
     && pip install poetry \
@@ -31,6 +34,10 @@ EXPOSE 8000
 RUN adduser \
     --disabled-password \
     --no-create-home \
-    django-user
+    django-user && \
+    mkdir -p /vol/web/media && \
+    mkdir -p /vol/web/static && \
+    chown -R django-user:django-user /vol && \
+    chmod -R 755 /vol
 
 USER django-user

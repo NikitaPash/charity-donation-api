@@ -112,7 +112,6 @@ class PrivateCampaignAPITests(TestCase):
         """Test creating a campaign."""
         payload = {
             'title': 'Sample campaign title',
-            'description': 'Sample campaign description',
             'goal_amount': '1000',
         }
         res = self.client.post(CAMPAIGN_URLS, payload)

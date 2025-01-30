@@ -1,6 +1,6 @@
 [flake8]
 ignore = C101, I100
-application-import-names = main_app
+application-import-names = main_app, campaign
 max-line-length = 119
 exclude =
   .venv,

@@ -4,6 +4,7 @@ services:
       context: .
     volumes:
       - ./backend:/app/backend
+      - dev-static-data:/vol/web
     ports:
       - "8000:8000"
     command: >
@@ -16,6 +17,7 @@ services:
       - DB_USER=${DB_USER}
       - DB_PASS=${DB_PASS}
       - SECRET_KEY=${SECRET_KEY}
+      - DJANGO_ENV=${DJANGO_ENV}
     depends_on:
       - db
 
@@ -32,3 +34,4 @@ services:
 
 volumes:
   dev-db-data:
+  dev-static-data:

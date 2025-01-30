@@ -2,10 +2,7 @@
 Tests for Campaign model.
 """
 from decimal import Decimal
-from datetime import timedelta
 
-from django.core.exceptions import ValidationError
-from django.utils.timezone import now
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 
@@ -31,17 +28,6 @@ class CampaignModelTests(TestCase):
         )
 
         self.assertEqual(str(campaign), campaign.title)
-
-    def test_deadline_validation(self):
-        """Test throwing an error when wrong deadline provided."""
-        with self.assertRaises(ValidationError):
-            Campaign.objects.create(
-                user=self.user,
-                title='Sample campaign title',
-                description='Sample campaign description',
-                goal_amount=Decimal('1000'),
-                deadline=now() - timedelta(days=30),
-            )
 
     def test_status_change(self):
         """Test status code change after goal amount is reached."""

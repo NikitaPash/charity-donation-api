@@ -5,13 +5,23 @@ from django.conf import settings
 from django.db import models
 from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
-from django.core.exceptions import ValidationError
 
 from decimal import Decimal
 from datetime import timedelta
+import uuid
+import os
+
+
+def campaign_image_file_path(instance, filename):
+    """Generate file path for new campaign image."""
+    ext = os.path.splitext(filename)[1]
+    filename = f'{uuid.uuid4()}{ext}'
+
+    return os.path.join('uploads', 'campaign', filename)
 
 
 def default_deadline():
+    """Return a default campaign deadline"""
     return now() + timedelta(days=90)
 
 
@@ -46,15 +56,13 @@ class Campaign(models.Model):
     )
     deadline = models.DateTimeField(default=default_deadline)
     created_at = models.DateTimeField(auto_now_add=True, db_index=True)
+    image = models.ImageField(null=True, upload_to=campaign_image_file_path)
 
     def __str__(self):
         return self.title
 
     def save(self, *args, **kwargs):
         """Override save method to handle custom validation."""
-        if self.deadline <= now():
-            raise ValidationError(_('Deadline must be in the future'))
-
         if self.goal_amount <= self.raised_amount:
             self.status = Campaign.CampaignStatusChoice.COMPLETED
 

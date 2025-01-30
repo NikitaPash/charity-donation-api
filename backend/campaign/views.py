@@ -10,7 +10,7 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 
 from main_app.permissions import IsCampaignManager
 
-from .serializers import CampaignDetailSerializer, CampaignSerializer
+from .serializers import CampaignDetailSerializer, CampaignImageSerializer, CampaignSerializer
 from .models import Campaign
 
 import logging
@@ -31,20 +31,18 @@ class CampaignViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         """Create a new campaign."""
+        serializer.validated_data.pop('image', None)
         serializer.save(user=self.request.user)
 
     def get_serializer_class(self):
         """Return a serializer class for request."""
-        if self.action == 'list' or self.action == 'my_campaigns':
+        actions = ['list', 'my_campaigns', 'create']
+        if self.action in actions:
             return CampaignSerializer
-        return self.serializer_class
+        elif self.action == 'upload_image':
+            return CampaignImageSerializer
 
-    @action(methods=['GET'], detail=False, url_path='my-campaigns')
-    def my_campaigns(self, request):
-        """Retrieve campaigns created by the requesting user."""
-        campaigns = self.get_queryset().filter(user=request.user)
-        serializer = CampaignSerializer(campaigns, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        return self.serializer_class
 
     def create(self, request, *args, **kwargs):
         """Handle campaign creation."""
@@ -71,3 +69,22 @@ class CampaignViewSet(viewsets.ModelViewSet):
     def destroy(self, request, *args, **kwargs):
         """Handle campaign deletion."""
         return super().destroy(request, *args, **kwargs)
+
+    @action(methods=['GET'], detail=False, url_path='my-campaigns')
+    def my_campaigns(self, request):
+        """Retrieve campaigns created by the requesting user."""
+        campaigns = self.get_queryset().filter(user=request.user)
+        serializer = CampaignSerializer(campaigns, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    @action(methods=['POST'], detail=True, url_path='upload-image')
+    def upload_image(self, request, pk=None):
+        """Upload an image to campaign."""
+        campaign = self.get_object()
+        serializer = self.get_serializer(campaign, data=request.data)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
