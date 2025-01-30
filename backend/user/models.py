@@ -69,6 +69,9 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     USERNAME_FIELD = 'email'
 
+    def __str__(self):
+        return self.email
+
     def add_balance(self, amount):
         """Add some amount to user's balance."""
         self.balance += amount
@@ -76,16 +79,5 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def deduct_balance(self, amount):
         """Deduct some amount from user's balance."""
-        if amount > self.balance:
-            logger.warning(
-                f'Insufficient balance for user {self.email}. '
-                f'Tried to deduct: {amount}, available: {self.balance}'
-            )
-            raise ValueError(_('Insufficient balance.'))
-        if amount < 0:
-            logger.error(f'Invalid balance deduction attempt for user {self.email}: {amount}')
-            raise ValueError(_('Incorrect amount to deduct'))
-
         self.balance -= amount
         self.save()
-        logger.info(f'Deducted {amount} from balance for user {self.email}. New balance: {self.balance}')

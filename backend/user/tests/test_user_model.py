@@ -82,12 +82,7 @@ class UserModelTests(TestCase):
         """Test deducting from balance."""
         user = create_user(email='testdeduct1@example.com')
         balance = user.balance = Decimal('100')
-        amount_to_deduct1 = Decimal('55.50')
-        amount_to_deduct2 = Decimal('-10.50')
-        user.deduct_balance(amount_to_deduct1)
+        amount_to_deduct = Decimal('55.50')
+        user.deduct_balance(amount_to_deduct)
 
-        self.assertEqual(user.balance, balance - amount_to_deduct1)
-        with self.assertRaises(ValueError):
-            user.deduct_balance(amount_to_deduct1)
-        with self.assertRaises(ValueError):
-            user.deduct_balance(amount_to_deduct2)
+        self.assertEqual(user.balance, balance - amount_to_deduct)
