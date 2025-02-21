@@ -1,3 +1,6 @@
+"""Utils functions for the projects."""
+from django.core.cache import cache
+
 from io import BytesIO
 
 from reportlab.pdfgen import canvas
@@ -24,3 +27,9 @@ def generate_receipt(donation):
 
     buffer.seek(0)
     return buffer
+
+
+def invalidate_cache(*args):
+    """Clear campaign-related cache."""
+    for key in args:
+        cache.delete(key)

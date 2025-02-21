@@ -14,7 +14,7 @@ from rest_framework.response import Response
 
 from campaign.models import Campaign
 
-from main_app.receipt_gen import generate_receipt
+from main_app.utils import generate_receipt, invalidate_cache
 
 from .models import Donation
 from .serializers import DonationSerializer
@@ -66,7 +66,7 @@ class DonationViewSet(mixins.ListModelMixin, mixins.CreateModelMixin, viewsets.G
                 user.deduct_balance(amount)
                 user.refresh_from_db()
 
-            cache.delete(f'donation_list_{request.user.id}')
+            invalidate_cache(f'donation_list_{request.user.id}')
             logger.info(f'Donation was made successfully by {request.user.email}')
             return Response({ # noqa
                 'status': 'Donation successful',

@@ -11,6 +11,7 @@ from rest_framework.exceptions import ValidationError
 from rest_framework_simplejwt.authentication import JWTAuthentication
 
 from main_app.permissions import IsCampaignManager
+from main_app.utils import invalidate_cache
 
 from .serializers import CampaignDetailSerializer, CampaignImageSerializer, CampaignSerializer
 from .models import Campaign
@@ -34,7 +35,7 @@ class CampaignViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         """Create a new campaign."""
         serializer.save(user=self.request.user)
-        self._invalidate_cache()
+        invalidate_cache('campaign_list', f'my_campaigns_{self.request.user.id}')
 
     def get_serializer_class(self):
         """Return a serializer class for request."""
@@ -62,7 +63,7 @@ class CampaignViewSet(viewsets.ModelViewSet):
         """Handle campaign creation."""
         try:
             response = super().create(request, *args, **kwargs)
-            self._invalidate_cache()
+            invalidate_cache('campaign_list', f'my_campaigns_{self.request.user.id}')
             logger.info(f'New campaign created successfully by {request.user.email}')
             return response
         except ValidationError as e:
@@ -72,19 +73,19 @@ class CampaignViewSet(viewsets.ModelViewSet):
     def update(self, request, *args, **kwargs):
         """Handle campaign update."""
         response = super().update(request, *args, **kwargs)
-        self._invalidate_cache()
+        invalidate_cache('campaign_list', f'my_campaigns_{self.request.user.id}')
         return response
 
     def partial_update(self, request, *args, **kwargs):
         """Handle campaign partial update."""
         response = super().partial_update(request, *args, **kwargs)
-        self._invalidate_cache()
+        invalidate_cache('campaign_list', f'my_campaigns_{self.request.user.id}')
         return response
 
     def destroy(self, request, *args, **kwargs):
         """Handle campaign deletion."""
         response = super().destroy(request, *args, **kwargs)
-        self._invalidate_cache()
+        invalidate_cache('campaign_list', f'my_campaigns_{self.request.user.id}')
         return response
 
     @action(methods=['GET'], detail=False, url_path='my-campaigns')
@@ -109,12 +110,7 @@ class CampaignViewSet(viewsets.ModelViewSet):
 
         if serializer.is_valid():
             serializer.save()
-            self._invalidate_cache()
+            invalidate_cache('campaign_list', f'my_campaigns_{self.request.user.id}')
             return Response(serializer.data, status=status.HTTP_200_OK)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    def _invalidate_cache(self):
-        """Clear campaign-related cache."""
-        cache.delete('campaign_list')
-        cache.delete(f'my_campaigns_{self.request.user.id}')
