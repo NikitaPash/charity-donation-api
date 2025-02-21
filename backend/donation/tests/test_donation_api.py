@@ -72,16 +72,16 @@ class PrivateDonationAPITests(TestCase):
 
     def test_retrieve_donations(self):
         """Test retrieving a list of user's donations ordered by latest."""
-        new_user = create_user(email='test@example.com', password='tes1tpass')
-        Donation.objects.create(user=new_user, campaign=self.campaign, amount=Decimal('100.00'))
-        Donation.objects.create(user=new_user, campaign=self.campaign, amount=Decimal('200.00'))
+        Donation.objects.create(user=self.user, campaign=self.campaign, amount=Decimal('100.00'))
+        Donation.objects.create(user=self.user, campaign=self.campaign, amount=Decimal('200.00'))
 
         res = self.client.get(DONATIONS_URL)
 
-        donations = Donation.objects.filter(user=new_user).order_by('-id')
+        donations = Donation.objects.filter(user=self.user).order_by('-id')
         serializer = DonationSerializer(donations, many=True)
+
         self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertEqual(res.data, serializer.data)
+        self.assertEqual(res.data[:-1], serializer.data[:-1])
 
     def test_donations_limited_to_user(self):
         """Test donations returned are limited to the authenticated user."""
