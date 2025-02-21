@@ -4,6 +4,7 @@ Views for the Donation API.
 from django.db import transaction
 from django.db.models import F
 from django.http import HttpResponse
+from django.core.cache import cache
 
 from rest_framework import mixins, status, viewsets
 from rest_framework.decorators import action
@@ -32,6 +33,18 @@ class DonationViewSet(mixins.ListModelMixin, mixins.CreateModelMixin, viewsets.G
         """Retrieve ordered donations."""
         return self.queryset.filter(user=self.request.user).order_by('-id')
 
+    def list(self, request, *args, **kwargs):  # noqa
+        """Retrieve ordered donations with caching."""
+        cache_key = f'donation_list_{request.user.id}'
+        cached_data = cache.get(cache_key)
+
+        if cached_data:
+            return Response(cached_data)
+
+        response = super().list(request, *args, **kwargs)
+        cache.set(cache_key, response.data, 60 * 5)
+        return response
+
     def create(self, request, *args, **kwargs):
         """Handle donation creation with validation."""
         try:
@@ -53,6 +66,7 @@ class DonationViewSet(mixins.ListModelMixin, mixins.CreateModelMixin, viewsets.G
                 user.deduct_balance(amount)
                 user.refresh_from_db()
 
+            cache.delete(f'donation_list_{request.user.id}')
             logger.info(f'Donation was made successfully by {request.user.email}')
             return Response({ # noqa
                 'status': 'Donation successful',

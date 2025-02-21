@@ -2,11 +2,12 @@
 Tests for Campaign model.
 """
 from decimal import Decimal
+from unittest.mock import patch
 
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 
-from campaign.models import Campaign
+from campaign.models import Campaign, campaign_image_file_path
 
 
 class CampaignModelTests(TestCase):
@@ -44,3 +45,12 @@ class CampaignModelTests(TestCase):
 
         self.assertNotEqual(campaign.status, status_when_created)
         self.assertEqual(campaign.status, 'CO')
+
+    @patch('campaign.models.uuid.uuid4')
+    def test_campaign_file_name_uuid(self, mock_uuid):
+        """Test generating image path."""
+        uuid = 'test-uuid'
+        mock_uuid.return_value = uuid
+        file_path = campaign_image_file_path(None, 'example.jpg')
+
+        self.assertEqual(file_path, f'uploads/campaign/{uuid}.jpg')

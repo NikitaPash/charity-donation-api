@@ -1,8 +1,12 @@
 """
-Tests for recipe API.
+Tests for Campaign API.
 """
 from decimal import Decimal
 from datetime import timedelta
+import tempfile
+import os
+
+from PIL import Image
 
 from django.utils import timezone
 from django.contrib.auth import get_user_model
@@ -36,6 +40,11 @@ def create_campaign(user, **params):
 def detail_url(campaign_id):
     """Create and return a campaign detail URL."""
     return reverse('campaign:campaign-detail', args=[campaign_id])
+
+
+def image_upload_url(campaign_id):
+    """Create and return an image upload URL."""
+    return reverse('campaign:campaign-upload-image', args=[campaign_id])
 
 
 def create_user(**params):
@@ -243,3 +252,42 @@ class PrivateCampaignAPITests(TestCase):
                     expected_status = status.HTTP_204_NO_CONTENT if can_edit else status.HTTP_403_FORBIDDEN
 
                 self.assertEqual(res.status_code, expected_status, f'Failed for {user.email} on {method.upper()}')
+
+
+class ImageUploadTests(TestCase):
+    """Tests for the image upload API."""
+
+    def setUp(self):
+        self.client = APIClient()
+        self.user = get_user_model().objects.create_user(
+            'user@example.com',
+            'password123',
+        )
+        self.client.force_authenticate(self.user)
+        self.campaign = create_campaign(user=self.user)
+
+    def tearDown(self):
+        self.campaign.image.delete()
+
+    def test_upload_image(self):
+        """Test uploading an image to a campaign."""
+        url = image_upload_url(self.campaign.id)
+        with tempfile.NamedTemporaryFile(suffix='.jpg') as image_file:
+            img = Image.new('RGB', (10, 10))
+            img.save(image_file, format='JPEG')
+            image_file.seek(0)
+            payload = {'image': image_file}
+            res = self.client.post(url, payload, format='multipart')
+
+        self.campaign.refresh_from_db()
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertIn('image', res.data)
+        self.assertTrue(os.path.exists(self.campaign.image.path))
+
+    def test_upload_image_bad_request(self):
+        """Test uploading an invalid image."""
+        url = image_upload_url(self.campaign.id)
+        payload = {'image': 'notanimage'}
+        res = self.client.post(url, payload, format='multipart')
+
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
