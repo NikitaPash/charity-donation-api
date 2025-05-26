@@ -31,7 +31,7 @@ test:
 
 .PHONY: rebuild
 rebuild:
-	docker-compose down && docker-compose build
+	docker-compose down && docker-compose up --build
 
 .PHONY: commit
 commit: full-migration docker-lint test ;

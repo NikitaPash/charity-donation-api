@@ -7,7 +7,16 @@ from rest_framework import serializers
 
 from main_app.serializer_utils import RestrictedFieldValidatorMixin
 
-from .models import Campaign
+from .models import Campaign, CampaignDocument
+
+
+class CampaignDocumentSerializer(serializers.ModelSerializer):
+    """Read-only nested representation of a campaign’s documents."""
+
+    class Meta:
+        model = CampaignDocument
+        fields = ['id', 'document', 'uploaded_at']
+        read_only_fields = ['id', 'uploaded_at']
 
 
 class CampaignSerializer(serializers.ModelSerializer):
@@ -19,7 +28,7 @@ class CampaignSerializer(serializers.ModelSerializer):
         read_only_fields = ['id', 'raised_amount', 'status']
 
     def validate_deadline(self, value):
-        """Ensure deadline is in the future."""
+        """Ensure the deadline is in the future."""
         if value <= now():
             raise serializers.ValidationError('Deadline must be in the future.')
         return value
@@ -27,9 +36,10 @@ class CampaignSerializer(serializers.ModelSerializer):
 
 class CampaignDetailSerializer(RestrictedFieldValidatorMixin, CampaignSerializer):
     """Serializer for campaign detail view."""
+    documents = CampaignDocumentSerializer(many=True, read_only=True)
 
     class Meta(CampaignSerializer.Meta):
-        fields = CampaignSerializer.Meta.fields + ['user', 'description', 'created_at', 'image']
+        fields = CampaignSerializer.Meta.fields + ['user', 'description', 'created_at', 'image', 'documents']
         read_only_fields = CampaignSerializer.Meta.read_only_fields + ['user', 'created_at']
         restricted_fields = ['raised_amount', 'user']
 
@@ -45,3 +55,13 @@ class CampaignImageSerializer(serializers.ModelSerializer):
         fields = ['id', 'image']
         read_only_fields = ['id']
         extra_kwargs = {'image': {'required': 'True'}}
+
+
+class CampaignDocumentUploadSerializer(serializers.ModelSerializer):
+    """Used for uploading a new PDF to a campaign."""
+
+    class Meta:
+        model = CampaignDocument
+        fields = ['id', 'document']
+        read_only_fields = ['id']
+        extra_kwargs = {'document': {'required': True}}

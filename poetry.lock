@@ -137,6 +137,20 @@ argon2 = ["argon2-cffi (>=19.1.0)"]
 bcrypt = ["bcrypt"]
 
 [[package]]
+name = "django-crontab"
+version = "0.7.1"
+description = "dead simple crontab powered job scheduling for django"
+optional = false
+python-versions = "*"
+groups = ["main"]
+files = [
+    {file = "django-crontab-0.7.1.tar.gz", hash = "sha256:1201810a212460aaaa48eb6a766738740daf42c1a4f6aafecfb1525036929236"},
+]
+
+[package.dependencies]
+Django = ">=1.8"
+
+[[package]]
 name = "django-redis"
 version = "5.4.0"
 description = "Full featured redis cache backend for Django."
@@ -790,4 +804,4 @@ test = ["covdefaults (>=2.3)", "coverage (>=7.2.7)", "coverage-enable-subprocess
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.11"
-content-hash = "031790a95249c164cb8728ce35c9a6f84204a9d2030b0bca95de04aaa1c51e57"
+content-hash = "c518dc2f31c2cbfa49ac7e2309d36680abeeff98db0f891900f118b6e4b45842"

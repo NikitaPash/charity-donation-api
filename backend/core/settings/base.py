@@ -29,6 +29,7 @@ INSTALLED_APPS = [  # type: ignore
     'rest_framework',
     'drf_spectacular',
     'rest_framework_simplejwt',
+    'django_crontab',
 
     'main_app.apps.MainAppConfig',
     'user.apps.UserConfig',
@@ -142,6 +143,10 @@ CACHES = {
         },
     }
 }
+
+CRONJOBS = [
+    ('0 * * * *', 'django.core.management.call_command', ['expire_campaigns']),
+]
 
 SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
 SESSION_CACHE_ALIAS = 'default'

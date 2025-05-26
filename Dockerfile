@@ -10,6 +10,7 @@ WORKDIR /app
 # Install dependencies
 RUN python -m venv /py && \
     apt-get update && apt-get install -y --no-install-recommends \
+    cron \
     build-essential \
     libpq-dev \
     gcc \
@@ -31,13 +32,8 @@ WORKDIR /app/backend
 
 EXPOSE 8000
 
-RUN adduser \
-    --disabled-password \
-    --no-create-home \
-    django-user && \
-    mkdir -p /vol/web/media && \
-    mkdir -p /vol/web/static && \
-    chown -R django-user:django-user /vol && \
-    chmod -R 755 /vol
 
-USER django-user
+COPY scripts/start_chron.sh /start_chron.sh
+RUN chmod +x /start_chron.sh
+
+ENTRYPOINT ["/start_chron.sh"]

@@ -5,6 +5,7 @@ from django.conf import settings
 from django.db import models
 from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
+from django.core.validators import FileExtensionValidator
 
 from decimal import Decimal
 from datetime import timedelta
@@ -13,7 +14,7 @@ import os
 
 
 def campaign_image_file_path(instance, filename):
-    """Generate file path for new campaign image."""
+    """Generate a file path for a new campaign image."""
     ext = os.path.splitext(filename)[1]
     filename = f'{uuid.uuid4()}{ext}'
 
@@ -29,9 +30,12 @@ class Campaign(models.Model):
     """Campaign object."""
 
     class CampaignStatusChoice(models.TextChoices):
-        """Status choices for campaign."""
+        """Status choices for a campaign."""
         ACTIVE = 'AC', _('Active')
         COMPLETED = 'CO', _('Completed')
+        ON_MODERATION = 'OM', _('On Moderation')
+        REJECTED = 'RE', _('Rejected')
+        EXPIRED = 'EX', _('Expired')
 
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -46,7 +50,7 @@ class Campaign(models.Model):
     status = models.CharField(
         max_length=10,
         choices=CampaignStatusChoice,
-        default=CampaignStatusChoice.ACTIVE,
+        default=CampaignStatusChoice.ON_MODERATION,
         db_index=True,
     )
     raised_amount = models.DecimalField(
@@ -62,8 +66,25 @@ class Campaign(models.Model):
         return self.title
 
     def save(self, *args, **kwargs):
-        """Override save method to handle custom validation."""
+        """Override the save method to handle custom validation."""
         if self.goal_amount <= self.raised_amount:
             self.status = Campaign.CampaignStatusChoice.COMPLETED
 
         super().save(*args, **kwargs)
+
+
+class CampaignDocument(models.Model):
+    campaign = models.ForeignKey(
+        Campaign,
+        on_delete=models.CASCADE,
+        related_name='documents',
+    )
+    document = models.FileField(
+        upload_to='campaign_documents/%Y/%m/%d/',
+        validators=[FileExtensionValidator(['pdf'])],
+        help_text='Upload a PDF document supporting this campaign.'
+    )
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f'{self.campaign.title} – {self.document.name}'

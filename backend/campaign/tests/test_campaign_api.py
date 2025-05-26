@@ -205,7 +205,7 @@ class PrivateCampaignAPITests(TestCase):
 
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.user.refresh_from_db()
-        self.assertEqual(campaign.get_status_display(), 'Active')
+        self.assertEqual(campaign.get_status_display(), 'On Moderation')
 
     def test_delete_campaign(self):
         """Test deleting a campaign successful."""
@@ -218,7 +218,7 @@ class PrivateCampaignAPITests(TestCase):
         self.assertFalse(Campaign.objects.filter(id=campaign.id).exists())
 
     def test_campaign_permissions(self):
-        """Test CRUD access to campaign for owner/superuser and default user."""
+        """Test CRUD access to a campaign for owner/superuser and default user."""
         owner = create_user(email='owner@example.com', password='testpass123')
         average_user = create_user(email='average@example.com', password='testpass123')
         superuser = get_user_model().objects.create_superuser(email='super@example.com', password='testpass123')
@@ -228,7 +228,7 @@ class PrivateCampaignAPITests(TestCase):
         for user, can_edit in test_users:
             self.client.force_authenticate(user=user)
 
-            campaign = create_campaign(user=owner, title='Test Campaign')
+            campaign = create_campaign(user=owner, title='Test Campaign', status='AC')
             url = detail_url(campaign.id)
 
             response = self.client.get(url)
