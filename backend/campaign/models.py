@@ -23,7 +23,7 @@ def campaign_image_file_path(instance, filename):
 
 def default_deadline():
     """Return a default campaign deadline"""
-    return now() + timedelta(days=90)
+    return (now() + timedelta(days=90)).date()
 
 
 class Campaign(models.Model):

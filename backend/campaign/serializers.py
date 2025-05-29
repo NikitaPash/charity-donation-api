@@ -29,7 +29,7 @@ class CampaignSerializer(serializers.ModelSerializer):
 
     def validate_deadline(self, value):
         """Ensure the deadline is in the future."""
-        if value <= now():
+        if value <= now().date():
             raise serializers.ValidationError('Deadline must be in the future.')
         return value
 

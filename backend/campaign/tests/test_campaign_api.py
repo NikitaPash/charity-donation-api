@@ -151,7 +151,7 @@ class PrivateCampaignAPITests(TestCase):
 
     def test_full_update(self):
         """Test full update of a campaign."""
-        deadline = timezone.now() + timedelta(days=60)
+        deadline = (timezone.now() + timedelta(days=90)).date()
         campaign = create_campaign(
             user=self.user, title='Sample title', description='Sample description', deadline=deadline
         )
@@ -161,7 +161,7 @@ class PrivateCampaignAPITests(TestCase):
             'title': 'Emergency Fundraiser',
             'description': 'Help us raise funds for community disaster relief efforts',
             'goal_amount': '10000.00',
-            'deadline': new_deadline.isoformat(),
+            'deadline': new_deadline.date(),
         }
 
         url = detail_url(campaign.id)
@@ -173,7 +173,7 @@ class PrivateCampaignAPITests(TestCase):
         self.assertEqual(campaign.title, payload['title'])
         self.assertEqual(campaign.description, payload['description'])
         self.assertEqual(campaign.goal_amount, Decimal(payload['goal_amount']))
-        self.assertAlmostEqual(campaign.deadline, new_deadline, delta=timedelta(seconds=1))
+        self.assertEqual(campaign.deadline, new_deadline.date())
 
         self.assertEqual(campaign.user, self.user)
 
