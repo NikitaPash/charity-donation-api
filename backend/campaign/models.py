@@ -58,8 +58,8 @@ class Campaign(models.Model):
         decimal_places=2,
         default=Decimal('0.00'),
     )
-    deadline = models.DateTimeField(default=default_deadline)
-    created_at = models.DateTimeField(auto_now_add=True, db_index=True)
+    deadline = models.DateField(default=default_deadline)
+    created_at = models.DateField(auto_now_add=True, db_index=True)
     image = models.ImageField(null=True, upload_to=campaign_image_file_path)
 
     def __str__(self):
@@ -84,7 +84,7 @@ class CampaignDocument(models.Model):
         validators=[FileExtensionValidator(['pdf'])],
         help_text='Upload a PDF document supporting this campaign.'
     )
-    uploaded_at = models.DateTimeField(auto_now_add=True)
+    uploaded_at = models.DateField(auto_now_add=True)
 
     def __str__(self):
         return f'{self.campaign.title} – {self.document.name}'
