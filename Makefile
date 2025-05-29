@@ -1,3 +1,17 @@
+.PHONY: help
+help:
+	@echo "Available commands:"
+	@echo "  migrate         Apply database migrations"
+	@echo "  migrations      Generate new migration files"
+	@echo "  full-migration  Run migrations and generate new migrations"
+	@echo "  superuser       Create a Django superuser interactively"
+	@echo "  create-app N    Start a new Django app named \$(N)"
+	@echo "  lint            Run pre-commit hooks on all files"
+	@echo "  docker-lint     Run flake8 inside the Docker container"
+	@echo "  test            Execute the full test suite"
+	@echo "  rebuild         Rebuild Docker containers from scratch"
+	@echo "  commit          Run migrations, lint and tests before commit"
+
 .PHONY: migrate
 migrate:
 	docker-compose run --rm app sh -c "poetry run python manage.py wait_for_db && poetry run python manage.py migrate"
